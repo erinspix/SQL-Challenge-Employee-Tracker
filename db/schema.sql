@@ -3,9 +3,9 @@ CREATE DATABASE co_db;
 --my friends told me to add this, caid it connects to new database.
 \c co_db;
 
-DROP TABLE IF EXISTS employee;
-DROP TABLE IF EXISTS role;
-DROP TABLE IF EXISTS department;
+-- DROP TABLE IF EXISTS employee;
+-- DROP TABLE IF EXISTS role;
+-- DROP TABLE IF EXISTS department;
 
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
