@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const client = require('./db'); // Database connection setup from earlier
+const client = require('./db/connections');
 
 const menuOptions = [
     'View all departments',
@@ -59,7 +59,7 @@ const mainMenu = async () => {
 
 // View all departments
 const viewDepartments = async () => {
-    const res = await client.query('SELECT * FROM departments');
+    const res = await client.query('SELECT * FROM department');
     console.table(res.rows);
     await mainMenu();
 };
