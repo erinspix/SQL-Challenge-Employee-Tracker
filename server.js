@@ -59,7 +59,7 @@ const mainMenu = async () => {
 
 // View all departments
 const viewDepartments = async () => {
-    const res = await client.query('SELECT * FROM department');
+    const res = await client.query('SELECT * FROM departments');
     console.table(res.rows);
     await mainMenu();
 };

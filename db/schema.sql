@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS co_db;
 CREATE DATABASE co_db;
---my friends told me to add this, caid it connects to new database.
+--my friends told me to add this, said it connects to new database.
 \c co_db;
 
 -- DROP TABLE IF EXISTS employee;
