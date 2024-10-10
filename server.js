@@ -59,7 +59,7 @@ const mainMenu = async () => {
 
 // View all departments
 const viewDepartments = async () => {
-    const res = await client.query('SELECT * FROM departments');
+    const res = await client.query('SELECT * FROM department');
     console.table(res.rows);
     await mainMenu();
 };
@@ -67,9 +67,9 @@ const viewDepartments = async () => {
 // View all roles
 const viewRoles = async () => {
     const res = await client.query(`
-        SELECT roles.id, roles.title, departments.name AS department, roles.salary
-        FROM roles
-        JOIN departments ON roles.department_id = departments.id;
+        SELECT role.id, role.title, department.name AS department, role.salary
+        FROM role
+        JOIN department ON role.department_id = department.id;
     `);
     console.table(res.rows);
     await mainMenu();
@@ -78,12 +78,12 @@ const viewRoles = async () => {
 // View all employees
 const viewEmployees = async () => {
     const res = await client.query(`
-        SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS department,
-        roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
-        FROM employees
-        JOIN roles ON employees.role_id = roles.id
-        JOIN departments ON roles.department_id = departments.id
-        LEFT JOIN employees manager ON employees.manager_id = manager.id;
+        SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department,
+        role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+        FROM employee
+        JOIN role ON employee.role_id = role.id
+        JOIN department ON role.department_id = department.id
+        LEFT JOIN employee manager ON employee.manager_id = manager.id;
     `);
     console.table(res.rows);
     await mainMenu();
@@ -97,14 +97,18 @@ const addDepartment = async () => {
         message: 'Enter the name of the new department:'
     });
 
-    await client.query('INSERT INTO departments (name) VALUES ($1)', [answer.name]);
-    console.log(`Added ${answer.name} to the database`);
+    try {
+        const res = await client.query('INSERT INTO department (name) VALUES ($1) RETURNING *', [answer.name]);
+        console.log(`Added department:`, res.rows[0]);
+    } catch (error) {
+        console.error('Error adding department:', error);
+    }
     await mainMenu();
 };
 
 // Add a new role
 const addRole = async () => {
-    const departments = await client.query('SELECT * FROM departments');
+    const departments = await client.query('SELECT * FROM department');
     const departmentChoices = departments.rows.map(({ id, name }) => ({ name, value: id }));
 
     const answer = await inquirer.prompt([
@@ -126,17 +130,17 @@ const addRole = async () => {
         }
     ]);
 
-    await client.query('INSERT INTO roles (title, salary, department_id) VALUES ($1, $2, $3)', [answer.title, answer.salary, answer.department_id]);
+    await client.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)', [answer.title, answer.salary, answer.department_id]);
     console.log(`Added ${answer.title} to the database`);
     await mainMenu();
 };
 
 // Add a new employee
 const addEmployee = async () => {
-    const roles = await client.query('SELECT * FROM roles');
+    const roles = await client.query('SELECT * FROM role');
     const roleChoices = roles.rows.map(({ id, title }) => ({ name: title, value: id }));
 
-    const employees = await client.query('SELECT * FROM employees');
+    const employees = await client.query('SELECT * FROM employee');
     const managerChoices = employees.rows.map(({ id, first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
     managerChoices.unshift({ name: 'None', value: null });
 
@@ -165,17 +169,17 @@ const addEmployee = async () => {
         }
     ]);
 
-    await client.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answer.first_name, answer.last_name, answer.role_id, answer.manager_id]);
+    await client.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answer.first_name, answer.last_name, answer.role_id, answer.manager_id]);
     console.log(`Added ${answer.first_name} ${answer.last_name} to the database`);
     await mainMenu();
 };
 
 // Update employee role
 const updateEmployeeRole = async () => {
-    const employees = await client.query('SELECT * FROM employees');
+    const employees = await client.query('SELECT * FROM employee');
     const employeeChoices = employees.rows.map(({ id, first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
 
-    const roles = await client.query('SELECT * FROM roles');
+    const roles = await client.query('SELECT * FROM role');
     const roleChoices = roles.rows.map(({ id, title }) => ({ name: title, value: id }));
 
     const answer = await inquirer.prompt([
@@ -193,14 +197,14 @@ const updateEmployeeRole = async () => {
         }
     ]);
 
-    await client.query('UPDATE employees SET role_id = $1 WHERE id = $2', [answer.role_id, answer.employee_id]);
+    await client.query('UPDATE employee SET role_id = $1 WHERE id = $2', [answer.role_id, answer.employee_id]);
     console.log('Updated employee role');
     await mainMenu();
 };
 
 // Delete an employee
 const deleteEmployee = async () => {
-    const employees = await client.query('SELECT * FROM employees');
+    const employees = await client.query('SELECT * FROM employee');
     const employeeChoices = employees.rows.map(({ id, first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
 
     const answer = await inquirer.prompt({
@@ -210,7 +214,7 @@ const deleteEmployee = async () => {
         choices: employeeChoices
     });
 
-    await client.query('DELETE FROM employees WHERE id = $1', [answer.employee_id]);
+    await client.query('DELETE FROM employee WHERE id = $1', [answer.employee_id]);
     console.log('Deleted employee');
     await mainMenu();
 };
