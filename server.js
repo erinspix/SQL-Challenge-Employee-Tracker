@@ -252,5 +252,25 @@ const deleteEmployee = async () => {
     await mainMenu();
 };
 
+const viewBudgetForDepartment = async () => {
+    try {
+        const res = await client.query('SELECT department.id, department.name, SUM(role.salary) AS Department_Budget FROM employee JOIN role ON employee.role_id = role.id JOIN department on role.department_id = department.id GROUP BY department.id, department.name;');
+/*        const res = await client.query(`
+            SELECT department.id, department.name, SUM(role.salary) AS Department_Budget 
+            FROM employee 
+            JOIN role 
+                ON employee.role_id = role.id 
+            JOIN department 
+                ON role.department_id = department.id 
+            GROUP BY department.id, department.name;`);
+            */
+    //    console.log('Budget per Department: ', res.rows);
+        console.table(res.rows);
+    } catch (error) {
+        console.error('Error Calculating Budget:', error);
+    }
+    await mainMenu()
+}
+
 // Start the application by displaying the main menu
 mainMenu();
