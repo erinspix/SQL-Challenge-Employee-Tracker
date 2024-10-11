@@ -27,5 +27,5 @@ LEFT JOIN role
 
 SELECT department.id, name, role.id, title, role.salary
 FROM role
-RIGHT JOIN department 
+RIGHTJOIN department 
     ON role.department_id = department.id;
