@@ -23,22 +23,23 @@ Installation
 Clone the repository to your local machine.
 
 bash:
+
 git clone https://github.com/your-username/SQL-Challenge-Employee-Tracker.git
 Navigate to the project directory.
 
 
-bash
 
 npm install
+
 Set up the PostgreSQL database:
 
 Run the schema.sql file to create the database and tables:
 
-bash
+
 
 psql -U your_username -d postgres -f db/schema.sql
 Run the seeds.sql file to populate the tables with initial data:
-bash
+
 
 psql -U your_username -d co_db -f db/seeds.sql
 Create a .env file in the root directory and add your database credentials:
@@ -56,7 +57,6 @@ DB_PORT=5432
 To use the application:
 
 Start the server:
-bash
 
 node server.js
 
@@ -91,3 +91,5 @@ Email: e.spix@yahoo.com
 - **Employee Table**: ![Table](/Images/Table.png)
 - **Department Total**: ![Department Average](/Images/budget.png)
 
+Demo Link:
+https://drive.google.com/file/d/1TWRRcb7A1oicgfvb6cssxO3sdgysodxs/view?usp=sharing
